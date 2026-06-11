@@ -4,16 +4,15 @@ Oyun karakteri ses dönüştürücü — bir voice line'ı (örn. *"Kill them al
 
 ## Çalıştırma
 
-```powershell
-.\start.ps1
-```
-
-veya:
+İlk kurulumda masaüstü kısayolu oluştur (bir kez):
 
 ```powershell
-python server.py
-# sonra tarayıcıda http://localhost:8765
+.\install-shortcut.ps1
 ```
+
+Sonrasında masaüstündeki **VoiceForge** kısayoluna çift tıkla — sunucuyu gizli başlatır, hazır olunca kendi penceresinde (adres çubuksuz uygulama modu) açar; pencereyi kapatınca sunucu da kapanır.
+
+Kısayolsuz: `.\start.ps1` (aynı akış) veya elle `python server.py` + tarayıcıda `http://localhost:8765`.
 
 ## Özellikler
 
