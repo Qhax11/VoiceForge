@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceForge — Oyun Karakteri Ses Dönüştürücü</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>⚒️ VoiceForge</h1>
+      <p class="subtitle">Voice line'ını oyun karakteri sesine dönüştür — tamamen lokal, hiçbir dosya internete gitmez.</p>
+    </header>
+
+    <!-- ========== 1. KAYNAK ========== -->
+    <section class="panel">
+      <div class="panel-title">1 · Kaynak ses</div>
+      <div class="tabs">
+        <button class="tab active" data-tab="file">📁 Dosya</button>
+        <button class="tab" data-tab="mic">🎤 Mikrofon</button>
+        <button class="tab" data-tab="tts">⌨️ Metin → Ses</button>
+      </div>
+
+      <div class="tab-page" id="tab-file">
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="file-input" accept="audio/*,video/*" hidden />
+          <p class="dropzone-title">Ses dosyasını buraya sürükle ya da tıkla ve seç</p>
+          <p class="dropzone-hint">wav, mp3, ogg, m4a, webm… (videodan da ses alınır)</p>
+        </div>
+      </div>
+
+      <div class="tab-page hidden" id="tab-mic">
+        <div class="mic-page">
+          <button id="rec-btn" class="btn rec">● Kayda Başla</button>
+          <span id="rec-time" class="rec-time hidden">00:00</span>
+          <p class="hint">Repliği söyle (örn. “kill them all”), durdurunca kaynak olarak yüklenir.</p>
+        </div>
+      </div>
+
+      <div class="tab-page hidden" id="tab-tts">
+        <div class="tts-page">
+          <textarea id="tts-text" rows="2" maxlength="500" placeholder="Bossun söyleyeceği cümleyi yaz… örn: Kill them all!"></textarea>
+          <div class="tts-controls">
+            <div class="control-group">
+              <label for="tts-voice">Ses</label>
+              <select id="tts-voice"></select>
+            </div>
+            <div class="control-group">
+              <label for="tts-rate">Hız <span id="tts-rate-val">0</span></label>
+              <input type="range" id="tts-rate" min="-5" max="5" step="1" value="0" />
+            </div>
+            <button id="tts-btn" class="btn primary">Seslendir</button>
+          </div>
+          <p id="tts-status" class="hint"></p>
+        </div>
+      </div>
+
+      <div id="source-card" class="source-card hidden">
+        <span class="source-icon">🎵</span>
+        <div class="source-info">
+          <span id="source-name">—</span>
+          <span id="source-meta" class="source-meta">—</span>
+        </div>
+        <button id="play-original" class="btn small">▶ Orijinali dinle</button>
+      </div>
+    </section>
+
+    <!-- ========== 2. KARAKTER ========== -->
+    <section class="panel" id="preset-panel">
+      <div class="panel-title">2 · Karakter seç</div>
+      <div id="preset-grid" class="preset-grid"></div>
+    </section>
+
+    <!-- ========== 3. İNCE AYAR ========== -->
+    <section class="panel hidden" id="tune-panel">
+      <div class="panel-title">3 · İnce ayar</div>
+      <div class="sliders">
+        <div class="control-group">
+          <label>Pitch <span id="pitch-val">0</span> st</label>
+          <input type="range" id="pitch" min="-8" max="8" step="0.5" value="0" />
+        </div>
+        <div class="control-group">
+          <label>Efekt yoğunluğu <span id="intensity-val">60</span></label>
+          <input type="range" id="intensity" min="0" max="100" step="1" value="60" />
+        </div>
+        <div class="control-group">
+          <label>Reverb <span id="reverb-val">40</span></label>
+          <input type="range" id="reverb" min="0" max="100" step="1" value="40" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ÇIKTI ========== -->
+    <div class="output-bar hidden" id="output-bar">
+      <span id="output-status" class="output-status"></span>
+      <button id="play-btn" class="btn primary" disabled>▶ Çal</button>
+      <button id="download-btn" class="btn" disabled>💾 WAV İndir</button>
+    </div>
+
+    <footer>
+      <p>Web Audio API ile çalışır · çıktı 16-bit WAV (UE5'e direkt import edilir)</p>
+    </footer>
+  </main>
+
+  <script src="audio-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
