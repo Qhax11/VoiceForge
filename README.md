@@ -16,7 +16,8 @@ Kısayolsuz: `.\start.ps1` (aynı akış) veya elle `python server.py` + tarayı
 
 ## Özellikler
 
-- **3 giriş yöntemi**: ses dosyası (sürükle-bırak), mikrofon kaydı, metin → ses (Windows SAPI TTS)
+- **3 giriş yöntemi**: ses dosyası (sürükle-bırak), mikrofon kaydı, metin → ses (TTS)
+- **İki TTS motoru**: neural (edge-tts — doğal tonlama, `pip install edge-tts` gerekir, internet ister; yalnızca metin gider) ve Windows SAPI (tamamen çevrimdışı yedek)
 - **10 karakter preseti**: İblis Lordu, Ork, Mağara Trolü, Dev, Zombi, Elf, Hayalet, Goblin, Robot, Telsiz
 - **İnce ayar**: pitch (±8 yarımton), efekt yoğunluğu, reverb miktarı
 - **Çıktı**: 16-bit PCM WAV — UE5'e direkt import edilir

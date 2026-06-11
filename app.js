@@ -117,23 +117,32 @@ async function initTts() {
     if (!res.ok) throw new Error('no server');
     const voices = await res.json();
     if (!voices.length) throw new Error('no voices');
-    // İngilizce sesler önce (boss replikleri çoğunlukla İngilizce)
-    voices.sort((a, b) => {
-      const ae = a.culture.startsWith('en') ? 0 : 1;
-      const be = b.culture.startsWith('en') ? 0 : 1;
-      return ae - be || a.name.localeCompare(b.name);
-    });
     const sel = $('tts-voice');
     sel.innerHTML = '';
-    for (const v of voices) {
-      const opt = document.createElement('option');
-      opt.value = v.name;
-      const gender = v.gender === 'Male' ? 'Erkek' : v.gender === 'Female' ? 'Kadın' : v.gender;
-      opt.textContent = `${v.name.replace('Microsoft ', '').replace(' Desktop', '')} (${gender}, ${v.culture})`;
-      sel.appendChild(opt);
+    const groups = [
+      { engine: 'neural', label: '🌐 Doğal tonlama (neural — internet ister)' },
+      { engine: 'sapi', label: '💻 Çevrimdışı (robotik — yedek)' },
+    ];
+    for (const g of groups) {
+      const list = voices.filter((v) => v.engine === g.engine);
+      if (!list.length) continue;
+      const og = document.createElement('optgroup');
+      og.label = g.label;
+      for (const v of list) {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.dataset.engine = v.engine;
+        const gender = v.gender === 'Male' ? 'Erkek' : v.gender === 'Female' ? 'Kadın' : v.gender;
+        opt.textContent = `${v.label || v.name} (${gender})`;
+        og.appendChild(opt);
+      }
+      sel.appendChild(og);
     }
-    const male = voices.find((v) => v.gender === 'Male' && v.culture.startsWith('en'));
-    if (male) sel.value = male.name;
+    const pref =
+      voices.find((v) => v.name === 'en-US-ChristopherNeural') ||
+      voices.find((v) => v.engine === 'neural' && v.gender === 'Male') ||
+      voices.find((v) => v.gender === 'Male');
+    if (pref) sel.value = pref.name;
     state.ttsAvailable = true;
   } catch {
     state.ttsAvailable = false;
@@ -151,11 +160,17 @@ $('tts-btn').addEventListener('click', async () => {
   $('tts-btn').disabled = true;
   $('tts-status').textContent = 'Sentezleniyor…';
   try {
+    const sel = $('tts-voice');
+    const engine = (sel.selectedOptions[0] && sel.selectedOptions[0].dataset.engine) || 'sapi';
     const res = await fetch('/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, voice: $('tts-voice').value, rate: parseInt($('tts-rate').value, 10) }),
+      body: JSON.stringify({ text, voice: sel.value, engine, rate: parseInt($('tts-rate').value, 10) }),
     });
+    if (res.status === 502) {
+      $('tts-status').textContent = 'Neural ses için internet gerekiyor — bağlantıyı kontrol et ya da Çevrimdışı bir ses seç.';
+      return;
+    }
     if (!res.ok) throw new Error('TTS sunucu hatası: ' + res.status);
     const ab = await res.arrayBuffer();
     const shortName = text.length > 30 ? text.slice(0, 30) + '…' : text;
